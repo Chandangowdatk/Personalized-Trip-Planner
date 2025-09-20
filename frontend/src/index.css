@@ -14,7 +14,7 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 25%, #0369a1 50%, #7c3aed 75%, #6b21a8 100%);
   min-height: 100vh;
 }
 
@@ -121,10 +121,31 @@ code {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #7c3aed 50%, #f59e0b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Travel-themed gradients */
+.gradient-ocean {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+}
+
+.gradient-sunset {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.gradient-mountain {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+}
+
+.gradient-luxury {
+  background: linear-gradient(135deg, #a855f7 0%, #6b21a8 100%);
+}
+
+.gradient-travel {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 25%, #0369a1 50%, #7c3aed 75%, #6b21a8 100%);
 }
 
 /* Glass morphism effect */
@@ -143,9 +164,37 @@ code {
   @apply bg-white/20 backdrop-blur-sm border border-white/30 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 hover:bg-white/30;
 }
 
+.btn-accent {
+  @apply bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl;
+}
+
+.btn-luxury {
+  @apply bg-gradient-to-r from-luxury-500 to-luxury-600 hover:from-luxury-600 hover:to-luxury-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl;
+}
+
+.btn-success {
+  @apply bg-gradient-to-r from-success-500 to-success-600 hover:from-success-600 hover:to-success-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl;
+}
+
 /* Card styles */
 .card {
   @apply bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/20;
+}
+
+.card-ocean {
+  @apply bg-gradient-to-br from-primary-50 to-primary-100 backdrop-blur-sm rounded-xl shadow-lg border border-primary-200;
+}
+
+.card-sunset {
+  @apply bg-gradient-to-br from-accent-50 to-accent-100 backdrop-blur-sm rounded-xl shadow-lg border border-accent-200;
+}
+
+.card-mountain {
+  @apply bg-gradient-to-br from-secondary-50 to-secondary-100 backdrop-blur-sm rounded-xl shadow-lg border border-secondary-200;
+}
+
+.card-luxury {
+  @apply bg-gradient-to-br from-luxury-50 to-luxury-100 backdrop-blur-sm rounded-xl shadow-lg border border-luxury-200;
 }
 
 /* Input styles */
