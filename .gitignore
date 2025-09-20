@@ -6,6 +6,15 @@ __pycache__/
 # C extensions
 *.so
 
+
+DEPLOYMENT.md
+FRONTEND_TROUBLESHOOTING.md
+README.md
+SETUP_GUIDE.md
+UX_DESIGN.md
+
+
+
 # Distribution / packaging
 .Python
 build/
