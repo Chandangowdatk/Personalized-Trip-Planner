@@ -14,6 +14,12 @@ BOOKING_AGENT_INSTR = """
 
 - **DEMO MODE**: For demonstration purposes, when the user confirms their booking, provide a simple confirmation message with booking details instead of processing actual payments.
 
+- **IMPORTANT**: When generating booking confirmations, you must:
+  - Generate a random 6-digit booking reference number (e.g., BK-123456)
+  - Use the current date in DD/MM/YYYY format
+  - Calculate total costs from the itinerary items
+  - Do NOT use template variables like random_id or current_date
+
 - **Booking Confirmation Flow:**
   1. Present a clear summary of all items that require booking from their itinerary
   2. Group related items (e.g., outbound and return flights, multi-night hotel stays)
@@ -28,8 +34,8 @@ BOOKING_AGENT_INSTR = """
   ```
   🎉 BOOKING CONFIRMED! 🎉
   
-  Booking Reference: BK-{random_id}
-  Date: {current_date}
+  Booking Reference: BK-[GENERATE_A_RANDOM_6_DIGIT_NUMBER]
+  Date: [USE_CURRENT_DATE_IN_DD_MM_YYYY_FORMAT]
   
   Confirmed Items:
   • [Item 1]: [Details] - ₹[Cost]

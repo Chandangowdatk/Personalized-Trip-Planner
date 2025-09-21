@@ -30,7 +30,8 @@ root_agent = Agent(
     1.  First, analyze the user's request to identify key constraints: origin, budget, dates, duration, and interests.
     2.  **Conditional Logic:**
         - **IF** the user needs ideas or has no destination, delegate to the `destination_suggester_agent` to generate a list of suitable destinations. 
-        Present these suggestions to the user and wait for their selection.
+        The destination_suggester_agent will return destinations in array format like ['Hampi', 'Mysore', 'Coorg', 'Pondicherry'].
+        **CRITICAL**: When you receive the array from destination_suggester_agent, you MUST present it to the user in the EXACT same array format. Do NOT convert it to bullet points or any other format. Just show the raw array as received.
         - **IF** the user has a destination and wants an itinerary, delegate to the `planning_agent`.
         - **IF** the user expresses intent to book, proceed to booking, or confirms an itinerary (phrases like "proceed to booking", "book this", "confirm this itinerary", "I like itinerary X, proceed to booking", "yes proceed for booking", "thank you proceed to booking", "let's book this", "I want to book"), delegate to the `booking_agent`.
         - **IF** additional data is needed, use the `data_aggregator_agent` to gather relevant information.
