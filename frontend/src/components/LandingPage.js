@@ -32,9 +32,9 @@ const LandingPage = () => {
     
     login(userData);
     
-    // Navigate to chat after a brief delay
+    // Navigate to home page after a brief delay
     setTimeout(() => {
-      navigate('/chat');
+      navigate('/home');
     }, 1000);
   };
 

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { Toaster } from 'react-hot-toast';
 
 import LandingPage from './components/LandingPage';
+import HomePage from './components/HomePage';
 import ChatInterface from './components/ChatInterface';
 import ItineraryDashboard from './components/ItineraryDashboard';
 import { AuthProvider } from './contexts/AuthContext';
@@ -56,6 +57,7 @@ function App() {
             <div className="App">
               <Routes>
                 <Route path="/" element={<LandingPage />} />
+                <Route path="/home" element={<HomePage />} />
                 <Route path="/chat" element={<ChatInterface />} />
                 <Route path="/itinerary" element={<ItineraryDashboard />} />
               </Routes>
