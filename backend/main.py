@@ -245,7 +245,7 @@ async def send_message(request: ChatMessage):
         
         return ChatResponse(
             response=response_text,
-            session_id=session_id,
+            session_id=session_id, 
             message_id=message_id,
             timestamp=datetime.now(),
             suggestions=suggestions

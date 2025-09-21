@@ -267,6 +267,143 @@ code {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
+/* Destination suggestion cards */
+.destination-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.destination-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.destination-card-selected {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.destination-image {
+  transition: transform 0.3s ease;
+}
+
+.destination-card:hover .destination-image {
+  transform: scale(1.1);
+}
+
+.destination-badge {
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.destination-rating {
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.destination-highlight {
+  transition: all 0.2s ease;
+}
+
+.destination-highlight:hover {
+  background-color: #f3f4f6;
+  transform: scale(1.05);
+}
+
+.destination-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.destination-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Carousel specific styles */
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+}
+
+.carousel-slide {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-nav-button {
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.carousel-nav-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-dot {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.carousel-dot:hover {
+  transform: scale(1.2);
+}
+
+.carousel-dot-active {
+  background-color: #3b82f6;
+  transform: scale(1.25);
+}
+
+/* Auto-play indicator */
+.auto-play-indicator {
+  transition: all 0.3s ease;
+}
+
+.auto-play-dot {
+  transition: all 0.3s ease;
+}
+
+/* Hero image overlay effects */
+.hero-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.3) 50%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+}
+
+/* Smooth carousel transitions */
+.carousel-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.carousel-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 500ms, transform 500ms ease-in-out;
+}
+
+.carousel-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.carousel-exit-active {
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: opacity 500ms, transform 500ms ease-in-out;
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .chat-bubble-user,
@@ -275,6 +412,10 @@ code {
   }
   
   .home-card-hover:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+  
+  .destination-card:hover {
     transform: translateY(-4px) scale(1.01);
   }
 }

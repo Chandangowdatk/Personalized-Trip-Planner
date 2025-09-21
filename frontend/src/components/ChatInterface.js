@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useChat } from '../contexts/ChatContext';
 import { useAuth } from '../contexts/AuthContext';
+import DestinationSuggestionCards from './DestinationSuggestionCards';
 import toast from 'react-hot-toast';
 
 const ChatInterface = () => {
@@ -32,6 +33,8 @@ const ChatInterface = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [destinationSuggestions, setDestinationSuggestions] = useState([]);
+  const [selectedDestination, setSelectedDestination] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -87,7 +90,104 @@ const ChatInterface = () => {
   const handleClearChat = () => {
     clearChat();
     setShowSuggestions(true);
+    setDestinationSuggestions([]);
+    setSelectedDestination(null);
     toast.success('Chat cleared');
+  };
+
+  // Function to parse destination suggestions from agent response
+  const parseDestinationSuggestions = (responseText) => {
+    console.log('🔍 Parsing response for destinations:', responseText.substring(0, 200) + '...');
+    
+    // Only look for destination suggestions in specific contexts
+    // Check if the response is actually suggesting destinations, not just mentioning them
+    
+    // Look for explicit destination suggestion patterns
+    const suggestionPatterns = [
+      // Pattern 1: Python list format like ['Jaipur', 'Goa', 'Varanasi']
+      /\[['"]([^'"]+)['"](?:,\s*['"]([^'"]+)['"])*\]/g,
+      // Pattern 2: "Here are some destinations:" followed by a list
+      /(?:here are|suggest|recommend).*?(?:destinations?|places?|options?)[:\s]+([A-Za-z\s,]+)/i,
+      // Pattern 3: "I suggest" or "I recommend" followed by destinations
+      /(?:i suggest|i recommend|consider).*?(?:destinations?|places?)[:\s]+([A-Za-z\s,]+)/i,
+      // Pattern 4: Numbered list of destinations (1. Jaipur 2. Goa)
+      /(?:^|\n)\s*\d+\.\s*([A-Za-z\s]+?)(?:\n|$)/gm,
+      // Pattern 5: Bullet points for destinations (- Jaipur - Goa)
+      /(?:^|\n)\s*[-•]\s*([A-Za-z\s]+?)(?:\n|$)/gm
+    ];
+
+    const destinations = new Set();
+
+    // First check for explicit suggestion patterns
+    suggestionPatterns.forEach(pattern => {
+      let match;
+      while ((match = pattern.exec(responseText)) !== null) {
+        if (pattern === suggestionPatterns[0]) {
+          // Handle array format
+          const arrayMatch = match[0];
+          const items = arrayMatch.match(/['"]([^'"]+)['"]/g);
+          if (items) {
+            items.forEach(item => {
+              const destination = item.replace(/['"]/g, '').trim();
+              if (destination && destination.length > 1 && destination.length < 50) {
+                destinations.add(destination);
+              }
+            });
+          }
+        } else {
+          // Handle other patterns
+          const destination = match[1].trim();
+          if (destination && destination.length > 1 && destination.length < 50) {
+            destinations.add(destination);
+          }
+        }
+      }
+    });
+
+    // If no explicit suggestion patterns found, this is likely an itinerary response
+    // Return empty array to show the message normally
+    if (destinations.size === 0) {
+      console.log('✅ No destination suggestions found - showing message normally');
+      return []; // No destination suggestions found - show message normally
+    }
+
+    // Return destinations if we found any through explicit patterns
+    return Array.from(destinations).slice(0, 6); // Return max 6 destinations
+  };
+
+  const handleDestinationSelect = async (destination) => {
+    console.log('🎯 Destination selected:', destination);
+    
+    // Prevent duplicate calls
+    if (isLoading) {
+      console.log('⚠️ Already processing a request, ignoring duplicate call');
+      return;
+    }
+    
+    setSelectedDestination(destination);
+    setDestinationSuggestions([]); // Clear suggestions after selection
+    
+    // Send a message to continue planning with the selected destination
+    const message = `I'd like to plan my trip to ${destination}. Please create a detailed itinerary for this destination.`;
+    console.log('📤 Sending follow-up message:', message);
+    
+    // Send to backend (sendMessage already handles adding user message)
+    await sendMessage(message);
+  };
+
+  // Function to manually trigger destination suggestions (for testing)
+  const triggerDestinationSuggestions = () => {
+    const testDestinations = ['Jaipur', 'Goa', 'Varanasi', 'Kerala', 'Ladakh'];
+    setDestinationSuggestions(testDestinations);
+  };
+
+  // Debug function to check message parsing
+  const debugMessageParsing = (messageContent) => {
+    const destinations = parseDestinationSuggestions(messageContent);
+    console.log('🔍 Debug parsing for:', messageContent.substring(0, 100) + '...');
+    console.log('🔍 Detected destinations:', destinations);
+    console.log('🔍 Has suggestions:', destinations.length > 0);
+    return destinations;
   };
 
   const quickActions = [
@@ -95,6 +195,7 @@ const ChatInterface = () => {
     { icon: <Calendar className="w-4 h-4" />, text: "Plan a trip", prompt: "Help me plan a 5-day trip" },
     { icon: <DollarSign className="w-4 h-4" />, text: "Budget planning", prompt: "I have a budget of ₹50,000 for my trip" },
     { icon: <Users className="w-4 h-4" />, text: "Group travel", prompt: "I'm planning a family trip with kids" },
+    { icon: <Sparkles className="w-4 h-4" />, text: "Test Cards", action: triggerDestinationSuggestions },
   ];
 
   return (
@@ -157,7 +258,7 @@ const ChatInterface = () => {
                       key={index}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => handleSuggestionClick(action.prompt)}
+                      onClick={() => action.action ? action.action() : handleSuggestionClick(action.prompt)}
                       className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-4 text-left hover:bg-white/30 transition-all duration-200"
                     >
                       <div className="flex items-center space-x-3 mb-2">
@@ -177,26 +278,68 @@ const ChatInterface = () => {
 
           {/* Messages */}
           <div className="space-y-6">
-            {messages.map((message) => (
-              <motion.div
-                key={message.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div className={`max-w-xs md:max-w-md lg:max-w-lg ${message.type === 'user' ? 'chat-bubble-user' : 'chat-bubble-agent'}`}>
-                  <div className="whitespace-pre-wrap">
-                    {message.content}
-                  </div>
-                  <div className={`text-xs mt-2 ${message.type === 'user' ? 'text-primary-100' : 'text-gray-500'}`}>
-                    {new Date(message.timestamp).toLocaleTimeString([], { 
-                      hour: '2-digit', 
-                      minute: '2-digit' 
-                    })}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+            {messages.map((message, index) => {
+              // Check if this is an agent message that might contain destination suggestions
+              const isAgentMessage = message.type === 'agent';
+              let destinations = [];
+              let hasDestinationSuggestions = false;
+              
+              if (isAgentMessage) {
+                try {
+                  destinations = parseDestinationSuggestions(message.content);
+                  hasDestinationSuggestions = destinations.length > 0;
+                } catch (error) {
+                  console.error('❌ Error parsing destination suggestions:', error);
+                  // If parsing fails, default to showing the message
+                  hasDestinationSuggestions = false;
+                }
+              }
+              
+              // Debug logging
+              if (isAgentMessage) {
+                console.log('🤖 Agent message:', message.content.substring(0, 100) + '...');
+                console.log('🎯 Detected destinations:', destinations);
+                console.log('🎯 Has destination suggestions:', hasDestinationSuggestions);
+                console.log('🎯 Will show text message:', !(isAgentMessage && hasDestinationSuggestions));
+                console.log('🎯 Message ID:', message.id);
+                console.log('🎯 Message type:', message.type);
+              }
+              
+              return (
+                <motion.div
+                  key={message.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {/* Show text message for user messages or agent messages without destination suggestions */}
+                  {(message.type === 'user' || !hasDestinationSuggestions) && (
+                    <div className={`max-w-xs md:max-w-md lg:max-w-lg ${message.type === 'user' ? 'chat-bubble-user' : 'chat-bubble-agent'}`}>
+                      <div className="whitespace-pre-wrap">
+                        {message.content}
+                      </div>
+                      <div className={`text-xs mt-2 ${message.type === 'user' ? 'text-primary-100' : 'text-gray-500'}`}>
+                        {new Date(message.timestamp).toLocaleTimeString([], { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Render destination suggestion cards if found */}
+                  {isAgentMessage && hasDestinationSuggestions && (
+                    <div className="w-full">
+                      <DestinationSuggestionCards
+                        destinations={destinations}
+                        onDestinationSelect={handleDestinationSelect}
+                        userPreferences={{}}
+                      />
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
 
             {/* Loading indicator */}
             {isLoading && (
@@ -222,8 +365,9 @@ const ChatInterface = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Suggestions */}
-          {suggestions.length > 0 && !isLoading && (
+
+          {/* Regular Suggestions */}
+          {suggestions.length > 0 && !isLoading && destinationSuggestions.length === 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
