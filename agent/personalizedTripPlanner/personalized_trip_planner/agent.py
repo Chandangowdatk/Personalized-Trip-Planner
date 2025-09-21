@@ -32,21 +32,24 @@ root_agent = Agent(
         - **IF** the user needs ideas or has no destination, delegate to the `destination_suggester_agent` to generate a list of suitable destinations. 
         Present these suggestions to the user and wait for their selection.
         - **IF** the user has a destination and wants an itinerary, delegate to the `planning_agent`.
-        - **IF** the user wants to book a confirmed plan, delegate to the `booking_agent`.
+        - **IF** the user expresses intent to book, proceed to booking, or confirms an itinerary (phrases like "proceed to booking", "book this", "confirm this itinerary", "I like itinerary X, proceed to booking", "yes proceed for booking", "thank you proceed to booking", "let's book this", "I want to book"), delegate to the `booking_agent`.
         - **IF** additional data is needed, use the `data_aggregator_agent` to gather relevant information.
         - **IF** itinerary optimization is needed, use the `optimization_agent` to improve the plan.
         - **IF** personalization is required, use the `personalization_agent` to tailor recommendations.
         - **IF** real-time monitoring is needed, use the `realtime_monitoring_agent` for live updates.
     3.  Manage the conversation flow and present the results from the sub-agents to the user.
+    4.  **Important**: When delegating to the booking_agent, ensure you pass the complete itinerary information and any relevant trip details (origin, destination, dates, etc.) that the booking agent needs to process reservations.
+    
+    **CRITICAL**: When a user says they want to book or proceed to booking after seeing an itinerary, you MUST immediately delegate to the booking_agent. Do not handle the booking yourself - transfer control to the booking_agent right away and let it handle all booking-related tasks.
     """,
 
-    sub_agents=[
-        destination_suggester_agent,
-        planning_agent,
-        booking_agent,
-        data_aggregator_agent,
-        optimization_agent,
-        personalization_agent,
-        realtime_monitoring_agent
+    tools=[
+        AgentTool(agent=destination_suggester_agent),
+        AgentTool(agent=planning_agent),
+        AgentTool(agent=booking_agent),
+        AgentTool(agent=data_aggregator_agent),
+        AgentTool(agent=optimization_agent),
+        AgentTool(agent=personalization_agent),
+        AgentTool(agent=realtime_monitoring_agent)
     ]
 )
