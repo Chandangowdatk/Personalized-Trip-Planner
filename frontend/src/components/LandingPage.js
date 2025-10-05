@@ -142,7 +142,7 @@ const LandingPage = () => {
             </div>
             <div>
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                TripPlanner AI
+                GoWanderLust
               </span>
               <p className="text-xs text-gray-500 font-medium">Your AI Travel Co-Pilot</p>
             </div>
@@ -359,7 +359,7 @@ const LandingPage = () => {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Why Travelers Love Us 💙
+              Why Travelers Love GoWanderLust 💙
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Experience the future of travel planning with cutting-edge AI technology
@@ -567,14 +567,14 @@ const LandingPage = () => {
                 <MapPin className="w-6 h-6 text-white" />
               </div>
               <div>
-                <span className="text-xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>TripPlanner AI</span>
+                <span className="text-xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>GoWanderLust</span>
                 <p className="text-xs text-gray-400">Powered by Google Cloud AI</p>
               </div>
             </div>
             
             <div className="text-center md:text-right">
               <p className="text-gray-400 text-sm">
-                © 2024 TripPlanner AI. All rights reserved.
+                © 2024 GoWanderLust. All rights reserved.
               </p>
               <p className="text-gray-500 text-xs mt-1">
                 Making travel planning joyful, one trip at a time 🌍✈️

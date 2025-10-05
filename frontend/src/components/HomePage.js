@@ -187,7 +187,7 @@ const HomePage = () => {
                 <MapPin className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">TripPlanner AI</h1>
+                <h1 className="text-xl font-bold text-gray-900">GoWanderLust</h1>
                 <p className="text-sm text-gray-500">Welcome back, {user?.name || 'Traveler'}!</p>
               </div>
             </motion.div>

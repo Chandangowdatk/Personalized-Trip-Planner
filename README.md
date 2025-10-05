@@ -1,4 +1,4 @@
-# 🌍 AI-Powered Personalized Trip Planner
+# 🌍 GoWanderLust - AI-Powered Personalized Trip Planner
 
 An intelligent, full-stack travel planning application that leverages **Google's Vertex AI Agent Engine** and **Firebase** to deliver hyper-personalized trip recommendations, real-time itinerary optimization, and seamless booking experiences.
 
@@ -143,7 +143,7 @@ cd Personalized-Trip-Planner
 
 #### Create Firebase Project
 1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project: `ai-personalized-trip-planner`
+2. Create a new project: `gowanderlust`
 3. Enable **Authentication** (Google, Email/Password)
 4. Enable **Cloud Firestore**
 5. Create a web app to get configuration
@@ -473,7 +473,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Chandan Gowda TK**
 - GitHub: [@Chandangowdatk](https://github.com/Chandangowdatk)
-- Project: [Personalized Trip Planner](https://github.com/Chandangowdatk/Personalized-Trip-Planner)
+- Project: [GoWanderLust](https://github.com/Chandangowdatk/Personalized-Trip-Planner)
 
 ---
 
