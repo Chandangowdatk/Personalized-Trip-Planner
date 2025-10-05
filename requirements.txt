@@ -1,0 +1,8 @@
+# Personalized Trip Planner Requirements
+
+# Google Places API Client Library (local development)
+# In production, this would be: google-places-client>=1.0.0
+-e ../google-places-client/
+
+# Other dependencies for the trip planner
+# Add your other dependencies here as needed

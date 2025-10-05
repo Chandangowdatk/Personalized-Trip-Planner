@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   MapPin, 
   Calendar, 
@@ -25,14 +25,36 @@ import {
   Play,
   Settings,
   History,
-  Share2
+  Share2,
+  User,
+  LogOut,
+  ChevronDown,
+  Mail,
+  Bell
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const profileDropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleStartPlanning = () => {
     navigate('/chat');
@@ -41,6 +63,26 @@ const HomePage = () => {
   const handleQuickAction = (action) => {
     // Handle quick actions - for now, navigate to chat with context
     navigate('/chat', { state: { quickAction: action } });
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast.success('Logged out successfully!');
+      navigate('/');
+    } catch (error) {
+      toast.error('Failed to logout. Please try again.');
+    }
+  };
+
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   const coreFeatures = [
@@ -151,20 +193,128 @@ const HomePage = () => {
             </motion.div>
             
             <div className="flex items-center space-x-4">
+              {/* Notifications */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <Settings className="w-5 h-5" />
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <History className="w-5 h-5" />
-              </motion.button>
+
+              {/* User Profile Dropdown */}
+              <div className="relative" ref={profileDropdownRef}>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                  className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  {/* User Avatar */}
+                  <div className="relative">
+                    {user?.photoURL ? (
+                      <img
+                        src={user.photoURL}
+                        alt={user.name}
+                        className="w-10 h-10 rounded-full object-cover ring-2 ring-blue-500"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold ring-2 ring-blue-500">
+                        {getInitials(user?.name)}
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                  </div>
+
+                  {/* User Info */}
+                  <div className="hidden md:block text-left">
+                    <p className="text-sm font-semibold text-gray-900">
+                      {user?.name || 'User'}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {user?.email || 'user@example.com'}
+                    </p>
+                  </div>
+
+                  <ChevronDown 
+                    className={`w-4 h-4 text-gray-500 transition-transform ${
+                      isProfileDropdownOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </motion.button>
+
+                {/* Dropdown Menu */}
+                <AnimatePresence>
+                  {isProfileDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50"
+                    >
+                      {/* User Info in Dropdown */}
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <p className="text-sm font-semibold text-gray-900">
+                          {user?.name || 'User'}
+                        </p>
+                        <p className="text-xs text-gray-500 flex items-center mt-1">
+                          <Mail className="w-3 h-3 mr-1" />
+                          {user?.email || 'user@example.com'}
+                        </p>
+                      </div>
+
+                      {/* Menu Items */}
+                      <div className="py-1">
+                        <button
+                          onClick={() => {
+                            setIsProfileDropdownOpen(false);
+                            navigate('/profile');
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors"
+                        >
+                          <User className="w-4 h-4" />
+                          <span>My Profile</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setIsProfileDropdownOpen(false);
+                            // Navigate to settings
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors"
+                        >
+                          <Settings className="w-4 h-4" />
+                          <span>Settings</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setIsProfileDropdownOpen(false);
+                            // Navigate to history
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors"
+                        >
+                          <History className="w-4 h-4" />
+                          <span>My Trips</span>
+                        </button>
+                      </div>
+
+                      {/* Logout */}
+                      <div className="border-t border-gray-100 pt-1">
+                        <button
+                          onClick={handleLogout}
+                          className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-3 transition-colors"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          <span>Logout</span>
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
         </div>

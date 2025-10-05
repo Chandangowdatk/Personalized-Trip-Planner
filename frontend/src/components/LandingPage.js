@@ -14,28 +14,29 @@ import {
   Heart
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import AuthModal from './AuthModal';
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  const handleGetStarted = async () => {
-    setIsLoading(true);
-    
-    // Simulate user login (in production, integrate with actual auth)
-    const userData = {
-      id: `user_${Date.now()}`,
-      name: 'Traveler',
-      email: 'traveler@example.com',
-    };
-    
-    login(userData);
-    
-    // Navigate to home page after a brief delay
+  // Redirect if already authenticated
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/home');
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleGetStarted = () => {
+    setIsAuthModalOpen(true);
+  };
+
+  const handleAuthSuccess = () => {
+    // Navigate to home page after successful authentication
     setTimeout(() => {
       navigate('/home');
-    }, 1000);
+    }, 500);
   };
 
   const features = [
@@ -89,9 +90,8 @@ const LandingPage = () => {
             animate={{ opacity: 1, x: 0 }}
             className="btn-secondary"
             onClick={handleGetStarted}
-            disabled={isLoading}
           >
-            {isLoading ? 'Starting...' : 'Get Started'}
+            Get Started
           </motion.button>
         </div>
       </nav>
@@ -123,19 +123,11 @@ const LandingPage = () => {
               whileTap={{ scale: 0.95 }}
               className="btn-primary text-lg px-8 py-4 mb-12"
               onClick={handleGetStarted}
-              disabled={isLoading}
             >
-              {isLoading ? (
-                <div className="flex items-center space-x-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Starting Your Journey...</span>
-                </div>
-              ) : (
-                <div className="flex items-center space-x-2">
-                  <span>Start Planning Now</span>
-                  <ArrowRight className="w-5 h-5" />
-                </div>
-              )}
+              <div className="flex items-center space-x-2">
+                <span>Start Planning Now</span>
+                <ArrowRight className="w-5 h-5" />
+              </div>
             </motion.button>
           </motion.div>
 
@@ -363,9 +355,8 @@ const LandingPage = () => {
               whileTap={{ scale: 0.95 }}
               className="btn-primary text-lg px-8 py-4"
               onClick={handleGetStarted}
-              disabled={isLoading}
             >
-              {isLoading ? 'Starting...' : 'Start Your Journey Now'}
+              Start Your Journey Now
             </motion.button>
           </motion.div>
         </div>
@@ -388,6 +379,13 @@ const LandingPage = () => {
           </p>
         </div>
       </footer>
+
+      {/* Authentication Modal */}
+      <AuthModal 
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={handleAuthSuccess}
+      />
     </div>
   );
 };

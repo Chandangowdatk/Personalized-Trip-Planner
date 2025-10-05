@@ -99,13 +99,30 @@ const ChatInterface = () => {
   const parseDestinationSuggestions = (responseText) => {
     console.log('🔍 Parsing response for destinations:', responseText.substring(0, 200) + '...');
     
+    // First, check if this is clearly an itinerary response (not destination suggestions)
+    const itineraryKeywords = [
+      'itinerary', 'day 1', 'day 2', 'day 3', 'day 4', 'day 5', 'day 6', 'day 7',
+      'detailed', 'schedule', 'timeline', 'activities', 'sightseeing', 'hotel',
+      'restaurant', 'breakfast', 'lunch', 'dinner', 'morning', 'afternoon', 'evening',
+      'accommodation', 'transportation', 'budget', 'cost', 'expenses'
+    ];
+    
+    const hasItineraryKeywords = itineraryKeywords.some(keyword => 
+      responseText.toLowerCase().includes(keyword.toLowerCase())
+    );
+    
+    if (hasItineraryKeywords) {
+      console.log('✅ This is an itinerary response - not showing destination cards');
+      return [];
+    }
+    
     // Only look for destination suggestions in specific contexts
     // Check if the response is actually suggesting destinations, not just mentioning them
     
     // Look for explicit destination suggestion patterns
     const suggestionPatterns = [
-      // Pattern 1: Python list format like ['Jaipur', 'Goa', 'Varanasi']
-      /\[['"]([^'"]+)['"](?:,\s*['"]([^'"]+)['"])*\]/g,
+      // Pattern 1: "Here are some destinations that might interest you: ['Hampi', 'Mysore']"
+      /(?:here are|suggest|recommend).*?(?:destinations?|places?|options?).*?\[['"]([^'"]+)['"](?:,\s*['"]([^'"]+)['"])*\]/gi,
       // Pattern 2: "Here are some destinations:" followed by a list
       /(?:here are|suggest|recommend).*?(?:destinations?|places?|options?)[:\s]+([A-Za-z\s,]+)/i,
       // Pattern 3: "I suggest" or "I recommend" followed by destinations
@@ -119,11 +136,11 @@ const ChatInterface = () => {
     const destinations = new Set();
 
     // First check for explicit suggestion patterns
-    suggestionPatterns.forEach(pattern => {
+    suggestionPatterns.forEach((pattern, index) => {
       let match;
       while ((match = pattern.exec(responseText)) !== null) {
-        if (pattern === suggestionPatterns[0]) {
-          // Handle array format
+        if (index === 0) {
+          // Handle array format (Pattern 1)
           const arrayMatch = match[0];
           const items = arrayMatch.match(/['"]([^'"]+)['"]/g);
           if (items) {
@@ -150,6 +167,8 @@ const ChatInterface = () => {
       console.log('✅ No destination suggestions found - showing message normally');
       return []; // No destination suggestions found - show message normally
     }
+
+    console.log('🎯 Found destinations:', Array.from(destinations));
 
     // Return destinations if we found any through explicit patterns
     return Array.from(destinations).slice(0, 6); // Return max 6 destinations

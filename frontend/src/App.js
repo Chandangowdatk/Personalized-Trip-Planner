@@ -7,6 +7,7 @@ import LandingPage from './components/LandingPage';
 import HomePage from './components/HomePage';
 import ChatInterface from './components/ChatInterface';
 import ItineraryDashboard from './components/ItineraryDashboard';
+import ProfilePage from './components/ProfilePage';
 import { AuthProvider } from './contexts/AuthContext';
 import { ChatProvider } from './contexts/ChatContext';
 
@@ -60,6 +61,7 @@ function App() {
                 <Route path="/home" element={<HomePage />} />
                 <Route path="/chat" element={<ChatInterface />} />
                 <Route path="/itinerary" element={<ItineraryDashboard />} />
+                <Route path="/profile" element={<ProfilePage />} />
               </Routes>
               <Toaster
                 position="top-right"
